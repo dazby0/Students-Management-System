@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #F8F9FA;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="293.0" layoutY="75.0" text="Add Student" fx:id="label_studentAction">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+      <Label layoutX="92.0" layoutY="199.0" text="Student ID:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField layoutX="93.0" layoutY="242.0" fx:id="input_studentId">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <Label layoutX="93.0" layoutY="300.0" text="Name:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField layoutX="93.0" layoutY="346.0" fx:id="input_name">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <Label layoutX="483.0" layoutY="199.0" text="Age:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField layoutX="483.0" layoutY="242.0" fx:id="input_age">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <Label layoutX="483.0" layoutY="300.0" text="Grade:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField layoutX="483.0" layoutY="346.0" fx:id="input_grade">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
+      <Button layoutX="583.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Add Student" textFill="WHITE" fx:id="btn_submit">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+      <Button layoutX="93.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Back" textFill="WHITE" fx:id="btn_back">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+   </children>
+</Pane>
