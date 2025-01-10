@@ -51,12 +51,12 @@
             <Font size="18.0" />
          </font>
       </TextField>
-      <Button layoutX="583.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Add Student" textFill="WHITE" fx:id="btn_submit">
+      <Button layoutX="583.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Submit" textFill="WHITE" fx:id="btn_submit">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
-      <Button layoutX="93.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Back" textFill="WHITE" fx:id="btn_back">
+      <Button layoutX="93.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Back" textFill="WHITE" fx:id="btn_switchToMain">
          <font>
             <Font size="18.0" />
          </font>
