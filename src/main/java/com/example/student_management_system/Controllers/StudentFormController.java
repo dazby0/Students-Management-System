@@ -1,5 +1,9 @@
 package com.example.student_management_system.Controllers;
 
+import com.example.student_management_system.Exceptions.DatabaseOperationException;
+import com.example.student_management_system.Exceptions.DuplicateStudentIDException;
+import com.example.student_management_system.Exceptions.StudentNotFoundException;
+import com.example.student_management_system.Exceptions.ValidationException;
 import com.example.student_management_system.Models.Student;
 import com.example.student_management_system.Database.StudentDAOImpl;
 import com.example.student_management_system.Utils.Validator;
@@ -11,8 +15,11 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
+/**
+ * Controller class for the student form view.
+ * Handles adding, editing, and deleting student data.
+ */
 public class StudentFormController {
 
     @FXML
@@ -47,15 +54,21 @@ public class StudentFormController {
     private boolean isEditing = false;
     private Student currentStudent;
 
+    /**
+     * Initializes the controller and sets up the form.
+     */
     @FXML
     public void initialize() {
         try {
             studentDAO.createTableIfNotExists();
-        } catch (SQLException e) {
-            labelError.setText("Error initializing database: " + e.getMessage());
+        } catch (DatabaseOperationException e) {
+            showAlert("Initialization Error", "Error initializing database: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
+    /**
+     * Configures the form for adding a new student.
+     */
     public void setAddingMode() {
         this.isEditing = false;
         this.currentStudent = null;
@@ -63,6 +76,11 @@ public class StudentFormController {
         labelHeader.setText("Add Student");
     }
 
+    /**
+     * Configures the form for editing an existing student.
+     *
+     * @param student The student to edit.
+     */
     public void setEditingMode(Student student) {
         this.isEditing = true;
         this.currentStudent = student;
@@ -71,6 +89,11 @@ public class StudentFormController {
         labelHeader.setText("Edit Student");
     }
 
+    /**
+     * Populates the form fields with the data of the given student.
+     *
+     * @param student The student whose data is used to populate the form.
+     */
     private void populateFormFields(Student student) {
         inputStudentId.setText(student.getStudentID());
         inputName.setText(student.getName());
@@ -79,6 +102,9 @@ public class StudentFormController {
         inputStudentId.setDisable(true);
     }
 
+    /**
+     * Handles the submission of the form, adding or updating a student.
+     */
     @FXML
     private void handleFormSubmission() {
         try {
@@ -87,6 +113,7 @@ public class StudentFormController {
             String ageText = inputAge.getText().trim();
             String gradeText = inputGrade.getText().trim();
 
+            // Validate the input fields
             Validator.validateStudentFields(studentID, name, ageText, gradeText);
 
             int age = Integer.parseInt(ageText);
@@ -97,25 +124,44 @@ public class StudentFormController {
             } else {
                 addStudent(new Student(name, age, grade, studentID));
             }
-        } catch (IllegalArgumentException e) {
-            labelError.setText(e.getMessage());
-        } catch (SQLException e) {
-            labelError.setText("Database error: " + e.getMessage());
+        } catch (ValidationException e) {
+            showAlert("Validation Error", e.getMessage(), Alert.AlertType.WARNING);
+        } catch (DuplicateStudentIDException e) {
+            showAlert("Duplicate ID Error", e.getMessage(), Alert.AlertType.ERROR);
+        } catch (DatabaseOperationException | StudentNotFoundException e) {
+            showAlert("Database Error", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
-    private void addStudent(Student student) throws SQLException {
+
+    /**
+     * Adds a new student to the database.
+     *
+     * @param student The student to add.
+     * @throws DatabaseOperationException If a database error occurs.
+     */
+    private void addStudent(Student student) throws DatabaseOperationException, DuplicateStudentIDException {
         studentDAO.insertStudent(student);
         showAlert("Success", "Student added successfully!", Alert.AlertType.INFORMATION);
         navigateToMainView();
     }
 
-    private void updateStudent(Student student) throws SQLException {
+    /**
+     * Updates the data of an existing student in the database.
+     *
+     * @param student The student with updated data.
+     * @throws StudentNotFoundException   If the student with the given ID is not found.
+     * @throws DatabaseOperationException If a database error occurs.
+     */
+    private void updateStudent(Student student) throws StudentNotFoundException, DatabaseOperationException {
         studentDAO.updateStudent(student);
         showAlert("Success", "Student updated successfully!", Alert.AlertType.INFORMATION);
         navigateToMainView();
     }
 
+    /**
+     * Handles deleting the current student from the database.
+     */
     @FXML
     private void handleDelete() {
         Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
@@ -128,13 +174,18 @@ public class StudentFormController {
                     studentDAO.deleteStudent(currentStudent.getStudentID());
                     showAlert("Success", "Student deleted successfully!", Alert.AlertType.INFORMATION);
                     navigateToMainView();
-                } catch (SQLException e) {
-                    labelError.setText("Error deleting student: " + e.getMessage());
+                } catch (StudentNotFoundException e) {
+                    showAlert("Student Not Found", e.getMessage(), Alert.AlertType.ERROR);
+                } catch (DatabaseOperationException e) {
+                    showAlert("Error Deleting Student", e.getMessage(), Alert.AlertType.ERROR);
                 }
             }
         });
     }
 
+    /**
+     * Navigates back to the main view.
+     */
     @FXML
     private void navigateToMainView() {
         try {
@@ -144,10 +195,17 @@ public class StudentFormController {
             Stage stage = (Stage) btnSwitchToMain.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            labelError.setText("Error navigating to main view: " + e.getMessage());
+            showAlert("Navigation Error", "Error navigating to main view: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
+    /**
+     * Displays an alert dialog with the specified title, content, and type.
+     *
+     * @param title     The title of the alert.
+     * @param content   The content of the alert.
+     * @param alertType The type of the alert (e.g., information, error).
+     */
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
