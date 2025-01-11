@@ -1,65 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #F8F9FA;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #F8F9FA;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.student_management_system.Controllers.StudentFormController">
    <children>
-      <Label layoutX="293.0" layoutY="75.0" text="Add Student" fx:id="label_studentAction">
+      <!-- Header Label -->
+      <Label fx:id="labelHeader" layoutX="293.0" layoutY="75.0" text="Student Form">
          <font>
             <Font name="System Bold" size="36.0" />
          </font>
       </Label>
+
+      <!-- Error Label -->
+      <Label fx:id="labelError" layoutX="293.0" layoutY="140.0" text="" textFill="#e57373">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+
+      <!-- Student ID -->
       <Label layoutX="92.0" layoutY="199.0" text="Student ID:">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField layoutX="93.0" layoutY="242.0" fx:id="input_studentId">
+      <TextField fx:id="inputStudentId" layoutX="93.0" layoutY="242.0">
          <font>
             <Font size="18.0" />
          </font>
       </TextField>
+
+      <!-- Name -->
       <Label layoutX="93.0" layoutY="300.0" text="Name:">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField layoutX="93.0" layoutY="346.0" fx:id="input_name">
+      <TextField fx:id="inputName" layoutX="93.0" layoutY="346.0">
          <font>
             <Font size="18.0" />
          </font>
       </TextField>
+
+      <!-- Age -->
       <Label layoutX="483.0" layoutY="199.0" text="Age:">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField layoutX="483.0" layoutY="242.0" fx:id="input_age">
+      <TextField fx:id="inputAge" layoutX="483.0" layoutY="242.0">
          <font>
             <Font size="18.0" />
          </font>
       </TextField>
+
+      <!-- Grade -->
       <Label layoutX="483.0" layoutY="300.0" text="Grade:">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField layoutX="483.0" layoutY="346.0" fx:id="input_grade">
+      <TextField fx:id="inputGrade" layoutX="483.0" layoutY="346.0">
          <font>
             <Font size="18.0" />
          </font>
       </TextField>
-      <Button layoutX="583.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Submit" textFill="WHITE" fx:id="btn_submit">
+
+      <!-- Delete Button -->
+      <Button fx:id="btnDelete" layoutX="483.0" layoutY="473.0" mnemonicParsing="false" onAction="#handleDelete" style="-fx-background-color: #e57373; -fx-text-fill: white;" text="Delete" visible="false">
          <font>
             <Font size="18.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Button>
-      <Button layoutX="93.0" layoutY="473.0" mnemonicParsing="false" style="-fx-background-color: #007BFF;" text="Back" textFill="WHITE" fx:id="btn_switchToMain">
+
+      <!-- Submit Button -->
+      <Button fx:id="btnSubmit" layoutX="626.0" layoutY="473.0" mnemonicParsing="false" onAction="#handleFormSubmission" style="-fx-background-color: #007BFF;" text="Submit" textFill="WHITE">
          <font>
             <Font size="18.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+
+      <!-- Back Button -->
+      <Button fx:id="btnSwitchToMain" layoutX="93.0" layoutY="473.0" mnemonicParsing="false" onAction="#navigateToMainView" style="-fx-background-color: #007BFF;" text="Back" textFill="WHITE">
+         <font>
+            <Font size="18.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Button>
    </children>
 </Pane>
