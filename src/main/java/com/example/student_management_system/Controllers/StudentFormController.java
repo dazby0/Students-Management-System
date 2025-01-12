@@ -1,20 +1,13 @@
 package com.example.student_management_system.Controllers;
 
-import com.example.student_management_system.Exceptions.DatabaseOperationException;
-import com.example.student_management_system.Exceptions.DuplicateStudentIDException;
-import com.example.student_management_system.Exceptions.StudentNotFoundException;
-import com.example.student_management_system.Exceptions.ValidationException;
+import com.example.student_management_system.Exceptions.*;
 import com.example.student_management_system.Models.Student;
 import com.example.student_management_system.Database.StudentDAOImpl;
+import com.example.student_management_system.Utils.Navigation;
 import com.example.student_management_system.Utils.Validator;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 /**
  * Controller class for the student form view.
@@ -22,40 +15,33 @@ import java.io.IOException;
  */
 public class StudentFormController {
 
+    // Form fields for student data input
     @FXML
     private TextField inputStudentId;
-
     @FXML
     private TextField inputName;
-
     @FXML
     private TextField inputAge;
-
     @FXML
     private TextField inputGrade;
 
-    @FXML
-    private Label labelError;
-
-    @FXML
-    private Button btnSubmit;
-
+    // UI elements for navigation and actions
     @FXML
     private Button btnSwitchToMain;
-
     @FXML
     private Label labelHeader;
-
     @FXML
     private Button btnDelete;
 
+    // DAO for database operations
     private final StudentDAOImpl studentDAO = new StudentDAOImpl();
 
+    // Flags to determine form mode and store the current student being edited
     private boolean isEditing = false;
     private Student currentStudent;
 
     /**
-     * Initializes the controller and sets up the form.
+     * Initializes the controller, preparing the database table if it doesn't exist.
      */
     @FXML
     public void initialize() {
@@ -108,19 +94,28 @@ public class StudentFormController {
     @FXML
     private void handleFormSubmission() {
         try {
+            // Read input values
             String studentID = inputStudentId.getText().trim();
             String name = inputName.getText().trim();
             String ageText = inputAge.getText().trim();
             String gradeText = inputGrade.getText().trim();
 
-            // Validate the input fields
+            // Validate input fields
             Validator.validateStudentFields(studentID, name, ageText, gradeText);
 
             int age = Integer.parseInt(ageText);
             double grade = Double.parseDouble(gradeText);
 
             if (isEditing) {
-                updateStudent(new Student(name, age, grade, studentID));
+                Student updatedStudent = new Student(name, age, grade, studentID);
+
+                // Check for changes before updating
+                if (isStudentUnchanged(updatedStudent)) {
+                    showAlert("No Changes", "No changes detected. The student record was not updated.", Alert.AlertType.WARNING);
+                    return;
+                }
+
+                updateStudent(updatedStudent);
             } else {
                 addStudent(new Student(name, age, grade, studentID));
             }
@@ -133,12 +128,24 @@ public class StudentFormController {
         }
     }
 
+    /**
+     * Compares the updated student data with the current data in the database.
+     *
+     * @param updatedStudent The student data entered in the form.
+     * @return True if the data is unchanged, false otherwise.
+     */
+    private boolean isStudentUnchanged(Student updatedStudent) {
+        return updatedStudent.getName().equals(currentStudent.getName())
+                && updatedStudent.getAge() == currentStudent.getAge()
+                && updatedStudent.getGrade() == currentStudent.getGrade();
+    }
 
     /**
      * Adds a new student to the database.
      *
      * @param student The student to add.
      * @throws DatabaseOperationException If a database error occurs.
+     * @throws DuplicateStudentIDException If the student ID already exists.
      */
     private void addStudent(Student student) throws DatabaseOperationException, DuplicateStudentIDException {
         studentDAO.insertStudent(student);
@@ -189,13 +196,10 @@ public class StudentFormController {
     @FXML
     private void navigateToMainView() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/student_management_system/main-view.fxml"));
-            Parent root = loader.load();
-
             Stage stage = (Stage) btnSwitchToMain.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            showAlert("Navigation Error", "Error navigating to main view: " + e.getMessage(), Alert.AlertType.ERROR);
+            Navigation.navigate(stage, "/com/example/student_management_system/main-view.fxml");
+        } catch (NavigationException e) {
+            showAlert("Navigation Error", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 

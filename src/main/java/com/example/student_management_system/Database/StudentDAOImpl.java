@@ -9,8 +9,17 @@ import javafx.collections.ObservableList;
 
 import java.sql.*;
 
+/**
+ * Implementation of the StudentDAO interface for managing student records in the database.
+ * Provides methods for creating, inserting, updating, retrieving, and deleting student data.
+ */
 public class StudentDAOImpl implements StudentDAO {
 
+    /**
+     * Creates the 'students' table if it does not exist in the database.
+     *
+     * @throws DatabaseOperationException If a database error occurs while creating the table.
+     */
     @Override
     public void createTableIfNotExists() throws DatabaseOperationException {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS students (" +
@@ -22,13 +31,20 @@ public class StudentDAOImpl implements StudentDAO {
 
         try (Connection connection = DatabaseConnection.connect();
              Statement stmt = connection.createStatement()) {
+
             stmt.execute(createTableSQL);
-            System.out.println("Table 'students' is ready.");
         } catch (SQLException e) {
             throw new DatabaseOperationException("Failed to create the students table.", e);
         }
     }
 
+    /**
+     * Inserts a new student into the database.
+     *
+     * @param student The student to be inserted.
+     * @throws DatabaseOperationException    If a database error occurs during the insertion.
+     * @throws DuplicateStudentIDException If a student with the same ID already exists.
+     */
     @Override
     public void insertStudent(Student student) throws DatabaseOperationException, DuplicateStudentIDException {
         String sql = "INSERT INTO students (name, age, grade, studentID) VALUES (?, ?, ?, ?)";
@@ -50,7 +66,12 @@ public class StudentDAOImpl implements StudentDAO {
         }
     }
 
-
+    /**
+     * Retrieves all students from the database.
+     *
+     * @return An observable list of students.
+     * @throws DatabaseOperationException If a database error occurs during the retrieval.
+     */
     @Override
     public ObservableList<Student> loadStudents() throws DatabaseOperationException {
         ObservableList<Student> students = FXCollections.observableArrayList();
@@ -74,12 +95,20 @@ public class StudentDAOImpl implements StudentDAO {
         return students;
     }
 
+    /**
+     * Updates an existing student in the database.
+     *
+     * @param student The updated student data.
+     * @throws StudentNotFoundException   If the student with the given ID is not found.
+     * @throws DatabaseOperationException If a database error occurs during the update.
+     */
     @Override
     public void updateStudent(Student student) throws StudentNotFoundException, DatabaseOperationException {
         String sql = "UPDATE students SET name = ?, age = ?, grade = ? WHERE studentID = ?";
 
         try (Connection connection = DatabaseConnection.connect();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, student.getName());
             pstmt.setInt(2, student.getAge());
             pstmt.setDouble(3, student.getGrade());
@@ -94,12 +123,20 @@ public class StudentDAOImpl implements StudentDAO {
         }
     }
 
+    /**
+     * Deletes a student from the database.
+     *
+     * @param studentID The ID of the student to delete.
+     * @throws StudentNotFoundException   If the student with the given ID is not found.
+     * @throws DatabaseOperationException If a database error occurs during the deletion.
+     */
     @Override
     public void deleteStudent(String studentID) throws StudentNotFoundException, DatabaseOperationException {
         String sql = "DELETE FROM students WHERE studentID = ?";
 
         try (Connection connection = DatabaseConnection.connect();
              PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, studentID);
 
             int rowsAffected = pstmt.executeUpdate();

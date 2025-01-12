@@ -5,15 +5,12 @@ import com.example.student_management_system.Exceptions.NavigationException;
 import com.example.student_management_system.Models.Student;
 import com.example.student_management_system.Database.StudentDAOImpl;
 import com.example.student_management_system.Utils.CalculateAverage;
+import com.example.student_management_system.Utils.Navigation;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,36 +18,31 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 /**
  * Controller class for the main view of the application.
  * Handles the display of all students and navigation to the student form view.
  */
 public class MainController {
 
-    @FXML
-    private Button btn_addStudentForm;
-
+    // Table view for displaying all students
     @FXML
     private TableView<Student> table_allStudents;
 
+    // Table columns for student properties
     @FXML
     private TableColumn<Student, String> col_studentID;
-
     @FXML
     private TableColumn<Student, String> col_name;
-
     @FXML
     private TableColumn<Student, Integer> col_age;
-
     @FXML
     private TableColumn<Student, Double> col_grade;
 
+    // DAO for interacting with the database
     private final StudentDAOImpl studentDAO = new StudentDAOImpl();
 
     /**
-     * Initializes the controller and sets up the table and event handlers.
+     * Initializes the controller, setting up the table and event handlers.
      */
     @FXML
     public void initialize() {
@@ -60,7 +52,7 @@ public class MainController {
     }
 
     /**
-     * Configures the table columns to bind to properties of the Student model.
+     * Configures the table columns to bind to the properties of the Student model.
      */
     private void setupTableColumns() {
         col_studentID.setCellValueFactory(new PropertyValueFactory<>("studentID"));
@@ -71,6 +63,7 @@ public class MainController {
 
     /**
      * Loads all students from the database and populates the table view.
+     * Handles database errors by logging them to the console.
      */
     private void loadStudentsIntoTable() {
         try {
@@ -90,6 +83,7 @@ public class MainController {
 
     /**
      * Handles a double-click event on a table row and navigates to the student form view.
+     * Allows editing the selected student's details.
      *
      * @param event The mouse event triggered by a double-click.
      */
@@ -97,7 +91,7 @@ public class MainController {
         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
             Student selectedStudent = table_allStudents.getSelectionModel().getSelectedItem();
             if (selectedStudent != null) {
-                navigateToStudentForm(selectedStudent);
+                navigateToEditStudentForm(selectedStudent);
             }
         }
     }
@@ -108,58 +102,35 @@ public class MainController {
      * @param event The action event triggered by clicking the "Add Student" button.
      */
     @FXML
-    private void handleAddStudentForm(ActionEvent event) {
+    private void navigateToAddStudentForm(ActionEvent event) {
         try {
-            navigateToView("/com/example/student_management_system/student-form-view.fxml", event, "add");
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            StudentFormController controller = Navigation.navigateWithController(stage, "/com/example/student_management_system/student-form-view.fxml");
+            controller.setAddingMode();
         } catch (NavigationException e) {
             showAlert("Navigation Error", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     /**
-     * Navigates to the student form view in editing mode with the selected student's data.
+     * Navigates to the student form view in editing mode.
+     * Passes the selected student's data to the form for editing.
      *
-     * @param student The selected student to edit.
+     * @param student The student to edit.
      */
-    private void navigateToStudentForm(Student student) {
+    private void navigateToEditStudentForm(Student student) {
         try {
-            navigateToView("/com/example/student_management_system/student-form-view.fxml", student, "edit");
-        } catch (NavigationException e) {
-            showAlert("Navigation Error", e.getMessage(), Alert.AlertType.ERROR);
-        }
-    }
-
-    /**
-     * Generic method to handle navigation to a specific view.
-     *
-     * @param fxmlPath The path to the FXML file.
-     * @param data     The data to pass to the new view (optional).
-     * @param mode     The mode of the view (e.g., "add" or "edit").
-     * @throws NavigationException If an error occurs during navigation.
-     */
-    private void navigateToView(String fxmlPath, Object data, String mode) throws NavigationException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-
-            // Pass data to the controller if needed
-            if ("edit".equals(mode) && data instanceof Student) {
-                StudentFormController controller = loader.getController();
-                controller.setEditingMode((Student) data);
-            } else if ("add".equals(mode)) {
-                StudentFormController controller = loader.getController();
-                controller.setAddingMode();
-            }
-
             Stage stage = (Stage) table_allStudents.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            throw new NavigationException("Failed to load the view: " + fxmlPath, e);
+            StudentFormController controller = Navigation.navigateWithController(stage, "/com/example/student_management_system/student-form-view.fxml");
+            controller.setEditingMode(student);
+        } catch (NavigationException e) {
+            showAlert("Navigation Error", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     /**
      * Calculates the average grade of all students and displays it in an alert dialog.
+     * If no students are present, shows a message indicating this.
      *
      * @param event The action event triggered by clicking the "Calculate Average" button.
      */
