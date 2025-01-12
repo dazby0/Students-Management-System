@@ -25,7 +25,7 @@ public class Navigation {
             FXMLLoader loader = new FXMLLoader(Navigation.class.getResource(fxmlPath));
             Parent root = loader.load();
             stage.setScene(new Scene(root));
-        } catch (IOException e) {
+        } catch (IOException | IllegalStateException e) {
             throw new NavigationException("Failed to load the view: " + fxmlPath, e);
         }
     }
@@ -45,7 +45,7 @@ public class Navigation {
             Parent root = loader.load();
             stage.setScene(new Scene(root));
             return loader.getController();
-        } catch (IOException e) {
+        } catch (IOException | IllegalStateException e) {
             throw new NavigationException("Failed to load the view: " + fxmlPath, e);
         }
     }

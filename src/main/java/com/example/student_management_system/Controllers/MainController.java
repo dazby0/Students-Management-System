@@ -26,17 +26,17 @@ public class MainController {
 
     // Table view for displaying all students
     @FXML
-    private TableView<Student> table_allStudents;
+    TableView<Student> table_allStudents;
 
     // Table columns for student properties
     @FXML
-    private TableColumn<Student, String> col_studentID;
+    TableColumn<Student, String> col_studentID;
     @FXML
-    private TableColumn<Student, String> col_name;
+    TableColumn<Student, String> col_name;
     @FXML
-    private TableColumn<Student, Integer> col_age;
+    TableColumn<Student, Integer> col_age;
     @FXML
-    private TableColumn<Student, Double> col_grade;
+    TableColumn<Student, Double> col_grade;
 
     // DAO for interacting with the database
     private final StudentDAOImpl studentDAO = new StudentDAOImpl();
@@ -65,7 +65,7 @@ public class MainController {
      * Loads all students from the database and populates the table view.
      * Handles database errors by logging them to the console.
      */
-    private void loadStudentsIntoTable() {
+    void loadStudentsIntoTable() {
         try {
             ObservableList<Student> students = studentDAO.loadStudents();
             table_allStudents.setItems(students);
@@ -102,7 +102,7 @@ public class MainController {
      * @param event The action event triggered by clicking the "Add Student" button.
      */
     @FXML
-    private void navigateToAddStudentForm(ActionEvent event) {
+    void navigateToAddStudentForm(ActionEvent event) {
         try {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             StudentFormController controller = Navigation.navigateWithController(stage, "/com/example/student_management_system/student-form-view.fxml");
@@ -118,7 +118,7 @@ public class MainController {
      *
      * @param student The student to edit.
      */
-    private void navigateToEditStudentForm(Student student) {
+    void navigateToEditStudentForm(Student student) {
         try {
             Stage stage = (Stage) table_allStudents.getScene().getWindow();
             StudentFormController controller = Navigation.navigateWithController(stage, "/com/example/student_management_system/student-form-view.fxml");
@@ -135,7 +135,7 @@ public class MainController {
      * @param event The action event triggered by clicking the "Calculate Average" button.
      */
     @FXML
-    private void handleCalculateAverage(ActionEvent event) {
+    void handleCalculateAverage(ActionEvent event) {
         try {
             ObservableList<Student> students = studentDAO.loadStudents();
             double averageGrade = CalculateAverage.calculateAverageGrade(students);
